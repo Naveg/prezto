@@ -1,0 +1,53 @@
+#
+# A simple theme that only shows relevant information.
+#
+# Authors:
+#   Sorin Ionescu <sorin.ionescu@gmail.com>
+#   Evan Goldenberg <evangoldenberg@gmail.com>
+#
+
+function prompt_naveg_precmd {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+
+  if (( $+functions[git-info] )); then
+    git-info
+  fi
+}
+
+function prompt_naveg_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd prompt_naveg_precmd
+
+  zstyle ':omz:module:editor' completing '%F{red}...%f'
+  zstyle ':omz:module:editor:keymap:primary' overwrite ' %F{red}♺%f'
+  zstyle ':omz:module:editor:keymap' alternate ' %F{yellow}❮%f%F{red}❮%f%F{red}❮%f'
+  zstyle ':omz:module:git' action ':%F{yellow}%s%f%%b'
+  zstyle ':omz:module:git' added ' %F{green}✚%f%%b'
+  zstyle ':omz:module:git' ahead ' %F{yellow}⬆%f%%b'
+  zstyle ':omz:module:git' behind ' %F{yellow}⬇%f%%b'
+  zstyle ':omz:module:git' branch '%F{green}%b%f'
+  zstyle ':omz:module:git' commit ':%F{green}%.7c%f'
+  zstyle ':omz:module:git' deleted ' %F{red}✖%f%%b'
+  zstyle ':omz:module:git' modified ' %F{blue}✱%f%%b'
+  zstyle ':omz:module:git' position ':%F{green}%p%f'
+  zstyle ':omz:module:git' renamed ' %F{magenta}➜%f%%b'
+  zstyle ':omz:module:git' stashed ' %F{cyan}✭%f%%b'
+  zstyle ':omz:module:git' unmerged ' %F{yellow}═%f%%b'
+  zstyle ':omz:module:git' untracked ' %F{white}◼%f%%b'
+  zstyle ':omz:module:git' info \
+    'prompt'  '%b%s' \
+    'rprompt' '%A%B%S%a%d%m%r%U%u'
+
+  PROMPT='%F{magenta}[%m]%F{green}[%1~]%f%(?:: %F{red}⏎ %f) %F{green}❯%f%b '
+  RPROMPT='${editor_info[keymap]}${editor_info[overwrite]}${VIM:+" %F{green}V%f%b"}%f${git_info:+${(e)git_info[prompt]}}${git_info[rprompt]}'
+  SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+}
+
+prompt_naveg_setup "$@"
+
+
